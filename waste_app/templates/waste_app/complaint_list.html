@@ -1,0 +1,14 @@
+{% extends 'waste_app/base.html' %}
+{% block content %}
+<h3>Your Complaints</h3>
+<table class="table table-bordered">
+<tr><th>Location</th><th>Description</th><th>Status</th></tr>
+{% for c in complaints %}
+<tr>
+<td>{{ c.location }}</td>
+<td>{{ c.description }}</td>
+<td>{{ c.status }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,11 +1,13 @@
 {% extends 'waste_app/base.html' %}
 {% block content %}
+
+<form method="post" >
 <h3>Login</h3>
-<form method="post">
 {% csrf_token %}
 <input name="username" class="form-control" placeholder="Username"><br>
 <input type="password" name="password" class="form-control" placeholder="Password"><br>
-<button class="btn btn-success">Login</button>
-<a href="{% url 'register' %}">Register</a>
+<button class="btn btn-success">Login</button><br>
+<h6>If you don't Have Account Do:</h6>
+<span><a href="{% url 'register' %}">Register</a></span>
 </form>
 {% endblock %}
