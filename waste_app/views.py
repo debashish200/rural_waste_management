@@ -50,3 +50,23 @@ def complaint_list(request):
     complaints = Complaint.objects.filter(user=request.user)
     return render(request, 'waste_app/complaint_list.html', {'complaints': complaints})
 
+
+@login_required
+def admin_dashboard(request):
+
+    if not request.user.is_staff:
+        return redirect('complaint_list')
+
+    if request.method == "POST":
+        cid = request.POST.get("cid")
+        status = request.POST.get("status")
+
+        Complaint.objects.filter(id=cid).update(status=status)
+
+    complaints = Complaint.objects.all()
+
+    return render(
+        request,
+        "waste_app/admin_dashboard.html",
+        {"complaints": complaints}
+    )

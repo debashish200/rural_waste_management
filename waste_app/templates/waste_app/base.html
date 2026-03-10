@@ -10,10 +10,50 @@
 <nav class="navbar navbar-dark bg-success">
   <div class="container">
     <a class="navbar-brand">Waste Management</a>
-    {% if user.is_authenticated%}
+
+    <!--{% if user.is_authenticated%}
     <a href="{% url 'complaint_form'%}" class="btn btn-light">Complaint_form</a>
     <a href="{% url 'logout' %}" class="btn btn-light">Logout</a>
     {% endif %}
+
+      {% if user.is_staff %}
+            <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                Admin Dashboard
+            </a>
+      {% else %}
+        <a href="{% url 'logout' %}" class="btn btn-light">Logout</a>
+        {% endif %}
+          -->
+     {% if user.is_authenticated %}
+
+                <!-- STAFF / ADMIN USER -->
+                {% if user.is_staff %}
+
+                        <a class="btn btn-light" href="{% url 'admin_dashboard' %}">
+                            Admin Dashboard
+                        </a>
+                <!-- NORMAL USER -->
+                {% else %}    
+                    <a class="btn btn-light" href="{% url 'complaint_form' %}">
+                            Submit Complaint
+                        </a>
+                  
+
+                        <a class="btn btn-light" href="{% url 'complaint_list' %}">
+                            My Complaints
+                        </a>
+                {% endif %}
+
+                  <span class="navbar-text text-red me-3">
+                        Welcome {{ user.username }}
+                    </span>
+                
+                    <a class="btn btn-light" href="{% url 'logout' %}">
+                        Logout
+                    </a>
+            {% else %}
+    {% endif %}
+
   </div>
 </nav>
 <div class="container mt-5">
