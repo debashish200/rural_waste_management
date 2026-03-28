@@ -22,8 +22,12 @@ def user_login(request):
         user=authenticate(username=username,password=password)
         if user is not None:
             login(request,user)
-            messages.success(request,'login Successfull')
-            return redirect('complaint_list')
+            if user.profile.role=='admin':
+                messages.success(request,'Admin login Successfull')
+                return redirect('admin_dashboard')
+            else:
+                messages.success(request,'User login successfully')
+                return redirect('complaint_list')
         else:
             messages.error(request,"invalid unsername or password")
 
@@ -54,7 +58,7 @@ def complaint_list(request):
 @login_required
 def admin_dashboard(request):
 
-    if not request.user.is_staff:
+    if not request.user.profile.role=='admin':
         return redirect('complaint_list')
 
     if request.method == "POST":

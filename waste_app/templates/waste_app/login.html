@@ -1,13 +1,20 @@
 {% extends 'waste_app/base.html' %}
 {% block content %}
 
-<form method="post" >
-<h3>Login</h3>
-{% csrf_token %}
-<input name="username" class="form-control" placeholder="Username"><br>
-<input type="password" name="password" class="form-control" placeholder="Password"><br>
-<button class="btn btn-success">Login</button><br>
-<h6>If you don't Have Account Do:</h6>
-<span><a href="{% url 'register' %}">Register</a></span>
-</form>
-{% endblock %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <form method="post" id='formwid'>
+            <h3>Login</h3>
+            {% csrf_token %}
+            <input name="username" class="form-control" placeholder="Username"><br>
+            <input type="password" name="password" class="form-control" placeholder="Password"><br>
+            <button class="btn btn-success">Login</button><br>
+            <div class="text-center mt-3">
+                <small>
+                    Don't have an account?
+                    <a href="{% url 'register' %}">Register</a>
+                </small>
+            </div>
+        </form>
+    </div>
+    {% endblock %}

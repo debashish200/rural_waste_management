@@ -9,16 +9,27 @@ class ComplaintForm(forms.ModelForm):
 
 
 class RegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    
+    #email = forms.EmailField(required=True)
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('user', 'User'),
+    )
+    role = forms.ChoiceField(choices=ROLE_CHOICES)
     class Meta:
         model=User
-        fields=['username','email','password1','password2']
+        fields=['username','email','password1','password2','role']
 
 
-    def __init__(self,*args,**kwargs):
-        super(RegistrationForm,self).__init__(*args,**kwargs)
+    def save(self,commit=True):
+        user=super().save(commit)
 
+        role=self.cleaned_data.get('role')
+        profile=user.profile
+        profile.role=role
+        profile.save()
+        
+        return user
+        
         #Revomes Help text
         for field in self.fields.values():
             field.help_text = None

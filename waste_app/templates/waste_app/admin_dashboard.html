@@ -2,65 +2,56 @@
 
 {% block content %}
 
-<h3 class="mb-3">Admin Dashboard</h3>
+<h4 class="mb-4">All Complaints</h4>
 
-<table class="table table-bordered table-striped">
+<table class="table table-hover">
 
-<thead class="table-dark">
+<thead class="table-light">
 <tr>
     <th>User</th>
     <th>Location</th>
     <th>Status</th>
-    <th>Update Status</th>
+    <th>Action</th>
 </tr>
 </thead>
 
-<tbody>
-
 {% for c in complaints %}
-
 <tr>
     <td>{{ c.user.username }}</td>
     <td>{{ c.location }}</td>
-    <td>{{ c.status }}</td>
+
+    <td>
+        <span class="badge 
+        {% if c.status == 'Pending' %}bg-warning
+        {% elif c.status == 'In Progress' %}bg-primary
+        {% else %}bg-success{% endif %}">
+        {{ c.status }}
+        </span>
+    </td>
 
     <td>
         <form method="post">
             {% csrf_token %}
-
             <input type="hidden" name="cid" value="{{ c.id }}">
 
-            <select name="status" class="form-select">
-                <option value="Pending" {% if c.status == "Pending" %}selected{% endif %}>
-                    Pending
-                </option>
-
-                <option value="In Progress" {% if c.status == "In Progress" %}selected{% endif %}>
-                    In Progress
-                </option>
-
-                <option value="Resolved" {% if c.status == "Resolved" %}selected{% endif %}>
-                    Resolved
-                </option>
+            <select name="status" >
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Resolved</option>
             </select>
 
-            <button type="submit" class="btn btn-sm btn-success mt-2">
-                Update
-            </button>
+            <button class="btn btn-success btn-modern btn-sm">Update</button>
         </form>
     </td>
-
 </tr>
+{% endfor %}
 
-{% empty %}
 
-<tr>
+{% comment %} <tr>
     <td colspan="4" class="text-center">
         No complaints found
     </td>
-</tr>
-
-{% endfor %}
+</tr> {% endcomment %}
 
 </tbody>
 
