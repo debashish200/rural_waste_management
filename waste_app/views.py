@@ -1,9 +1,13 @@
 from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from .models import *
 from .forms import *
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 # Create your views here.
 
@@ -46,6 +50,15 @@ def complaint_form(request):
         complaint = form.save(commit=False)
         complaint.user = request.user
         complaint.save()
+        #send mail
+
+        send_mail(
+            "Complaint Submitted",
+            f"Hi,{request.user.username},Your complaint has been Submitted Successfully",
+            settings.EMAIL_HOST_USER,
+            [request.user.email],
+            fail_silently=True,
+        )
         return redirect('complaint_list')
     return render(request, 'waste_app/complaint_form.html', {'form': form})
 
@@ -59,13 +72,24 @@ def complaint_list(request):
 def admin_dashboard(request):
 
     if not request.user.profile.role=='admin':
-        return redirect('complaint_list')
+        return HttpResponse("Unauthorized", status=403)
 
     if request.method == "POST":
         cid = request.POST.get("cid")
         status = request.POST.get("status")
 
-        Complaint.objects.filter(id=cid).update(status=status)
+        complaint = Complaint.objects.get(id=cid)
+        complaint.status = status
+        complaint.save()
+
+        # SEND EMAIL TO USER
+        send_mail(
+            "Complaint Status Updated",
+            f"Your complaint status has been updated to: {status}",
+            settings.EMAIL_HOST_USER,
+            [complaint.user.email],
+            fail_silently=True,
+        )
 
     complaints = Complaint.objects.all()
 

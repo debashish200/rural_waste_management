@@ -136,3 +136,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'complaint_list'
 LOGOUT_REDIRECT_URL = 'login'
+
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_HOST_USER='dasdebashish1711@gmail.com'
+EMAIL_HOST_PASSWORD='vtcw hyeu zyyb bjcy'
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+EMAIL_PORT=587
+
