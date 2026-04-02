@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 class ComplaintForm(forms.ModelForm):
     class Meta:
         model=Complaint
-        fields=['location','description']
+        fields=['location','description','image']
 
 
 class RegistrationForm(UserCreationForm):

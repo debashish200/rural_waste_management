@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Case, When, IntegerField
+
 
 
 # Create your views here.
@@ -44,7 +46,7 @@ def logout_view(request):
 
 @login_required
 def complaint_form(request):
-    form=ComplaintForm(request.POST or None)
+    form=ComplaintForm(request.POST or None,request.FILES or None)
 
     if form.is_valid():
         complaint = form.save(commit=False)
@@ -71,9 +73,9 @@ def complaint_list(request):
 @login_required
 def admin_dashboard(request):
 
-    if not request.user.profile.role=='admin':
+    if request.user.profile.role != 'admin':
         return HttpResponse("Unauthorized", status=403)
-
+    
     if request.method == "POST":
         cid = request.POST.get("cid")
         status = request.POST.get("status")
@@ -91,10 +93,22 @@ def admin_dashboard(request):
             fail_silently=True,
         )
 
+    sort = request.GET.get('sort')
+
     complaints = Complaint.objects.all()
 
-    return render(
-        request,
-        "waste_app/admin_dashboard.html",
-        {"complaints": complaints}
-    )
+    # SORTING LOGIC
+    if sort == 'pending':
+        complaints = complaints.filter(status='Pending').order_by('-created_at')
+
+    elif sort == 'resolved':
+        complaints = complaints.filter(status='Resolved').order_by('-created_at')
+
+    else:
+        # default sorting (latest first)
+        complaints = complaints.order_by('-created_at')
+
+
+    return render(request, "waste_app/admin_dashboard.html", {
+        "complaints": complaints
+    })

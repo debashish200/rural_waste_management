@@ -2,12 +2,19 @@
 {% block content %}
 <h3>Your Complaints</h3>
 <table class="table table-bordered">
-<tr><th>Location</th><th>Description</th><th>Status</th></tr>
+<tr><th>Location</th><th>Description</th><th>Status</th><th>Image</th></tr>
 {% for c in complaints %}
 <tr>
 <td>{{ c.location }}</td>
 <td>{{ c.description }}</td>
 <td>{{ c.status }}</td>
+<td>
+    {% if c.image %}
+        <img src="{{ c.image.url }}" width="100" height="100">
+    {% else %}
+        No image
+    {% endif %}
+</td>
 </tr>
 {% endfor %}
 </table>

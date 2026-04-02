@@ -4,6 +4,22 @@
 
 <h4 class="mb-4">All Complaints</h4>
 
+<div class="mb-3 d-flex gap-2">
+
+    <a href="?sort=latest" class="btn btn-dark btn-sm">
+        Latest
+    </a>
+
+    <a href="?sort=pending" class="btn btn-warning btn-sm">
+        Pending
+    </a>
+
+    <a href="?sort=resolved" class="btn btn-success btn-sm">
+        Resolved
+    </a>
+
+</div>
+
 <table class="table table-hover">
 
 <thead class="table-light">
@@ -11,6 +27,8 @@
     <th>User</th>
     <th>Location</th>
     <th>Status</th>
+    <th>Image</th>
+    <th>Complaint Date</th>
     <th>Action</th>
 </tr>
 </thead>
@@ -19,6 +37,7 @@
 <tr>
     <td>{{ c.user.username }}</td>
     <td>{{ c.location }}</td>
+    
 
     <td>
         <span class="badge 
@@ -28,7 +47,14 @@
         {{ c.status }}
         </span>
     </td>
-
+    <td>
+    {% if c.image %}
+        <img src="{{ c.image.url }}" width="80">
+    {% else %}
+        No Image
+    {% endif %}
+</td>
+    <td>{{ c.created_at|date:"d M Y, H:i" }}</td>
     <td>
         <form method="post">
             {% csrf_token %}
@@ -56,5 +82,11 @@
 </tbody>
 
 </table>
+{% comment %} <script>
+    // Auto refresh every 10 seconds
+    setTimeout(function(){
+        location.reload();
+    }, 10000); // 10000ms = 10 sec
+</script> {% endcomment %}
 
 {% endblock %}
