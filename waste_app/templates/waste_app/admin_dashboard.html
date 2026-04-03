@@ -22,71 +22,109 @@
 
 <table class="table table-hover">
 
-<thead class="table-light">
-<tr>
-    <th>User</th>
-    <th>Location</th>
-    <th>Status</th>
-    <th>Image</th>
-    <th>Complaint Date</th>
-    <th>Action</th>
-</tr>
-</thead>
+    <thead class="table-light">
+        <tr>
+            <th>User</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Image</th>
+            <th>Complaint Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
 
-{% for c in complaints %}
-<tr>
-    <td>{{ c.user.username }}</td>
-    <td>{{ c.location }}</td>
-    
+    {% for c in complaints %}
+    <tr>
+        <td>{{ c.user.username }}</td>
+        <td>{{ c.location }}</td>
 
-    <td>
-        <span class="badge 
+
+        <td>
+            <span class="badge 
         {% if c.status == 'Pending' %}bg-warning
         {% elif c.status == 'In Progress' %}bg-primary
         {% else %}bg-success{% endif %}">
-        {{ c.status }}
-        </span>
-    </td>
-    <td>
-    {% if c.image %}
-        <img src="{{ c.image.url }}" width="80">
-    {% else %}
-        No Image
-    {% endif %}
-</td>
-    <td>{{ c.created_at|date:"d M Y, H:i" }}</td>
-    <td>
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="cid" value="{{ c.id }}">
+                {{ c.status }}
+            </span>
+        </td>
+        <td>
+            {% if c.image %}
+            <img src="{{ c.image.url }}" width="80">
+            {% else %}
+            No Image
+            {% endif %}
+        </td>
+        <td>{{ c.created_at|date:"d M Y, H:i" }}</td>
+        <td>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="cid" value="{{ c.id }}">
 
-            <select name="status" >
+
+                <select name="status" class="form-select">
+
+                    {% if c.status == "Pending" %}
+                    <option selected>Pending</option>
+                    <option>In Progress</option>
+                    <option>Resolved</option>
+
+                    {% elif c.status == "In Progress" %}
+                    <option disabled>Pending</option>
+                    <option selected>In Progress</option>
+                    <option>Resolved</option>
+
+                    {% else %}
+                    <option disabled>Pending</option>
+                    <option disabled>In Progress</option>
+                    <option selected>Resolved</option>
+                    {% endif %}
+
+                </select>
+
+                <!-- <select name="status" >
                 <option>Pending</option>
                 <option>In Progress</option>
                 <option>Resolved</option>
-            </select>
+            </select> -->
 
-            <button class="btn btn-success btn-modern btn-sm">Update</button>
-        </form>
-    </td>
-</tr>
-{% endfor %}
+                <button class="btn btn-success btn-modern btn-sm">Update</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
 
 
-{% comment %} <tr>
-    <td colspan="4" class="text-center">
-        No complaints found
-    </td>
-</tr> {% endcomment %}
+    <!-- {% comment %} <tr>
+        <td colspan="4" class="text-center">
+            No complaints found
+        </td>
+    </tr> {% endcomment %} -->
 
-</tbody>
+    </tbody>
 
 </table>
-{% comment %} <script>
+
+<div class="mt-3 d-flex justify-content-center">
+
+    {% if complaints.has_previous %}
+        <a href="?page={{ complaints.previous_page_number }}" class="btn btn-sm btn-dark me-2">Previous</a>
+    {% endif %}
+
+    <span class="mt-1">
+        Page {{ complaints.number }} of {{ complaints.paginator.num_pages }}
+    </span>
+
+    {% if complaints.has_next %}
+        <a href="?page={{ complaints.next_page_number }}" class="btn btn-sm btn-dark ms-2">Next</a>
+    {% endif %}
+
+</div>
+<!-- {% comment %}
+<script>
     // Auto refresh every 10 seconds
-    setTimeout(function(){
+    setTimeout(function () {
         location.reload();
     }, 10000); // 10000ms = 10 sec
-</script> {% endcomment %}
+</script> {% endcomment %} -->
 
 {% endblock %}

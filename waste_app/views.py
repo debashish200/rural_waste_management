@@ -7,9 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from django.db.models import Case, When, IntegerField
-
-
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -70,6 +68,12 @@ def complaint_list(request):
     return render(request, 'waste_app/complaint_list.html', {'complaints': complaints})
 
 
+STATUS_ORDER = {
+    "Pending": 1,
+    "In Progress": 2,
+    "Resolved": 3
+}
+
 @login_required
 def admin_dashboard(request):
 
@@ -78,26 +82,38 @@ def admin_dashboard(request):
     
     if request.method == "POST":
         cid = request.POST.get("cid")
-        status = request.POST.get("status")
+        new_status = request.POST.get("status")
 
-        complaint = Complaint.objects.get(id=cid)
-        complaint.status = status
-        complaint.save()
+        try:
+            complaint = Complaint.objects.get(id=cid)
+            current_status = complaint.status
 
-        # SEND EMAIL TO USER
-        send_mail(
-            "Complaint Status Updated",
-            f"Your complaint status has been updated to: {status}",
-            settings.EMAIL_HOST_USER,
-            [complaint.user.email],
-            fail_silently=True,
-        )
+            #VALIDATION (NO BACKWARD)
+            if STATUS_ORDER[new_status] < STATUS_ORDER[current_status]:
+                messages.error(request, "Cannot move status backward!")
 
+            else:
+                complaint.status = new_status
+                complaint.save()
+
+                messages.success(request, "Status updated successfully!")
+
+                # SEND EMAIL ONLY IF SUCCESS
+                send_mail(
+                    "Complaint Status Updated",
+                    f"Your complaint status has been updated to: {complaint.status}",
+                    settings.EMAIL_HOST_USER,
+                    [complaint.user.email],
+                    fail_silently=True,
+                )
+
+        except Complaint.DoesNotExist:
+            messages.error(request, "Complaint not found!")
+
+    #SORTING
     sort = request.GET.get('sort')
-
     complaints = Complaint.objects.all()
 
-    # SORTING LOGIC
     if sort == 'pending':
         complaints = complaints.filter(status='Pending').order_by('-created_at')
 
@@ -105,9 +121,12 @@ def admin_dashboard(request):
         complaints = complaints.filter(status='Resolved').order_by('-created_at')
 
     else:
-        # default sorting (latest first)
         complaints = complaints.order_by('-created_at')
 
+    # PAGINATION
+    paginator = Paginator(complaints, 5)  # 5 complaints per page
+    page_number = request.GET.get('page')
+    complaints = paginator.get_page(page_number)
 
     return render(request, "waste_app/admin_dashboard.html", {
         "complaints": complaints
